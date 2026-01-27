@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 from typing import Optional
 
 class CustomerBase(BaseModel):
@@ -17,5 +17,4 @@ class CustomerUpdate(CustomerBase):
 class Customer(CustomerBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

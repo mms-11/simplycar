@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
 
 class VehicleBase(BaseModel):
@@ -20,4 +20,4 @@ class VehicleInDB(VehicleBase):
     id: int
 
 class Vehicle(VehicleInDB):
-    pass
+    model_config = ConfigDict(from_attributes=True)
