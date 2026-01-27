@@ -2,46 +2,50 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_database_session
-from app.models.services import Service
-from app.schemas.service import Service as ServiceSchema
-from app.schemas.service import ServiceCreate, ServiceUpdate
+from app.models.suppliers import Supplier
+from app.schemas.supplier import Supplier as SupplierSchema
+from app.schemas.supplier import SupplierCreate, SupplierUpdate
 
 router = APIRouter()
 
 
-@router.get("", response_model=list[ServiceSchema])
-def list_services(db: Session = Depends(get_database_session)):
-    return db.query(Service).all()
+@router.get("", response_model=list[SupplierSchema])
+def list_suppliers(db: Session = Depends(get_database_session)):
+    return db.query(Supplier).all()
 
 
-@router.post("", response_model=ServiceSchema, status_code=201)
-def create_service(payload: ServiceCreate, db: Session = Depends(get_database_session)):
-    service = Service(**payload.model_dump())
-    db.add(service)
+@router.post("", response_model=SupplierSchema, status_code=201)
+def create_supplier(payload: SupplierCreate, db: Session = Depends(get_database_session)):
+    supplier = Supplier(**payload.model_dump())
+    db.add(supplier)
     db.commit()
-    db.refresh(service)
-    return service
+    db.refresh(supplier)
+    return supplier
 
 
-@router.get("/{service_id}", response_model=ServiceSchema)
-def get_service(service_id: int, db: Session = Depends(get_database_session)):
-    service = db.get(Service, service_id)
-    if not service:
-        raise HTTPException(status_code=404, detail="Service not found")
-    return service
+@router.get("/{supplier_id}", response_model=SupplierSchema)
+def get_supplier(supplier_id: int, db: Session = Depends(get_database_session)):
+    supplier = db.get(Supplier, supplier_id)
+    if not supplier:
+        raise HTTPException(status_code=404, detail="Supplier not found")
+    return supplier
 
 
-@router.patch("/{service_id}", response_model=ServiceSchema)
-def update_service(service_id: int, payload: ServiceUpdate, db: Session = Depends(get_database_session)):
-    service = db.get(Service, service_id)
-    if not service:
-        raise HTTPException(status_code=404, detail="Service not found")
+@router.patch("/{supplier_id}", response_model=SupplierSchema)
+def update_supplier(
+    supplier_id: int,
+    payload: SupplierUpdate,
+    db: Session = Depends(get_database_session),
+):
+    supplier = db.get(Supplier, supplier_id)
+    if not supplier:
+        raise HTTPException(status_code=404, detail="Supplier not found")
 
     data = payload.model_dump(exclude_unset=True)
     for key, value in data.items():
-        setattr(service, key, value)
+        setattr(supplier, key, value)
 
-    db.add(service)
+    db.add(supplier)
     db.commit()
-    db.refresh(service)
-    return service
+    db.refresh(supplier)
+    return supplier
