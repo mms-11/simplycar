@@ -1,21 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.api.dependencies import get_database_session
+from app.api.services._common import apply_partial_update, get_or_404
 from app.models.customers import Customer
-from app.schemas.customer import Customer as CustomerSchema
 from app.schemas.customer import CustomerCreate, CustomerUpdate
 
-router = APIRouter()
 
-
-@router.get("", response_model=list[CustomerSchema])
-def list_customers(db: Session = Depends(get_database_session)):
+def list_customers(db: Session) -> list[Customer]:
     return db.query(Customer).all()
 
 
-@router.post("", response_model=CustomerSchema, status_code=201)
-def create_customer(payload: CustomerCreate, db: Session = Depends(get_database_session)):
+def create_customer(db: Session, payload: CustomerCreate) -> Customer:
     customer = Customer(**payload.model_dump())
     db.add(customer)
     db.commit()
@@ -23,29 +17,20 @@ def create_customer(payload: CustomerCreate, db: Session = Depends(get_database_
     return customer
 
 
-@router.get("/{customer_id}", response_model=CustomerSchema)
-def get_customer(customer_id: int, db: Session = Depends(get_database_session)):
-    customer = db.get(Customer, customer_id)
-    if not customer:
-        raise HTTPException(status_code=404, detail="Customer not found")
-    return customer
+def get_customer(db: Session, customer_id: int) -> Customer:
+    return get_or_404(db, Customer, customer_id, detail="Customer not found")
 
 
-@router.patch("/{customer_id}", response_model=CustomerSchema)
-def update_customer(
-    customer_id: int,
-    payload: CustomerUpdate,
-    db: Session = Depends(get_database_session),
-):
-    customer = db.get(Customer, customer_id)
-    if not customer:
-        raise HTTPException(status_code=404, detail="Customer not found")
-
-    data = payload.model_dump(exclude_unset=True)
-    for key, value in data.items():
-        setattr(customer, key, value)
-
+def update_customer(db: Session, customer_id: int, payload: CustomerUpdate) -> Customer:
+    customer = get_or_404(db, Customer, customer_id, detail="Customer not found")
+    apply_partial_update(customer, payload.model_dump(exclude_unset=True))
     db.add(customer)
     db.commit()
     db.refresh(customer)
     return customer
+
+
+def delete_customer(db: Session, customer_id: int) -> None:
+    customer = get_or_404(db, Customer, customer_id, detail="Customer not found")
+    db.delete(customer)
+    db.commit()

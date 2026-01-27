@@ -1,21 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException
+from __future__ import annotations
+
 from sqlalchemy.orm import Session
 
-from app.api.dependencies import get_database_session
+from app.api.services._common import apply_partial_update, get_or_404
 from app.models.appointments import Appointment
-from app.schemas.appointment import Appointment as AppointmentSchema
 from app.schemas.appointment import AppointmentCreate, AppointmentUpdate
 
-router = APIRouter()
 
-
-@router.get("", response_model=list[AppointmentSchema])
-def list_appointments(db: Session = Depends(get_database_session)):
+def list_appointments(db: Session) -> list[Appointment]:
     return db.query(Appointment).all()
 
 
-@router.post("", response_model=AppointmentSchema, status_code=201)
-def create_appointment(payload: AppointmentCreate, db: Session = Depends(get_database_session)):
+def create_appointment(db: Session, payload: AppointmentCreate) -> Appointment:
     appointment = Appointment(**payload.model_dump())
     db.add(appointment)
     db.commit()
@@ -23,29 +19,20 @@ def create_appointment(payload: AppointmentCreate, db: Session = Depends(get_dat
     return appointment
 
 
-@router.get("/{appointment_id}", response_model=AppointmentSchema)
-def get_appointment(appointment_id: int, db: Session = Depends(get_database_session)):
-    appointment = db.get(Appointment, appointment_id)
-    if not appointment:
-        raise HTTPException(status_code=404, detail="Appointment not found")
-    return appointment
+def get_appointment(db: Session, appointment_id: int) -> Appointment:
+    return get_or_404(db, Appointment, appointment_id, detail="Appointment not found")
 
 
-@router.patch("/{appointment_id}", response_model=AppointmentSchema)
-def update_appointment(
-    appointment_id: int,
-    payload: AppointmentUpdate,
-    db: Session = Depends(get_database_session),
-):
-    appointment = db.get(Appointment, appointment_id)
-    if not appointment:
-        raise HTTPException(status_code=404, detail="Appointment not found")
-
-    data = payload.model_dump(exclude_unset=True)
-    for key, value in data.items():
-        setattr(appointment, key, value)
-
+def update_appointment(db: Session, appointment_id: int, payload: AppointmentUpdate) -> Appointment:
+    appointment = get_or_404(db, Appointment, appointment_id, detail="Appointment not found")
+    apply_partial_update(appointment, payload.model_dump(exclude_unset=True))
     db.add(appointment)
     db.commit()
     db.refresh(appointment)
     return appointment
+
+
+def delete_appointment(db: Session, appointment_id: int) -> None:
+    appointment = get_or_404(db, Appointment, appointment_id, detail="Appointment not found")
+    db.delete(appointment)
+    db.commit()
