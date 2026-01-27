@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_database_session
 from app.models.appointments import Appointment
-from app.schemas.ordem_servico import Appointment as AppointmentSchema
-from app.schemas.ordem_servico import AppointmentCreate, AppointmentUpdate
+from app.schemas.appointment import Appointment as AppointmentSchema
+from app.schemas.appointment import AppointmentCreate, AppointmentUpdate
 
 router = APIRouter()
 

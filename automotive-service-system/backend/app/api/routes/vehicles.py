@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_database_session
 from app.models.vehicles import Vehicle
-from app.schemas.veiculo import Vehicle as VehicleSchema
-from app.schemas.veiculo import VehicleCreate, VehicleUpdate
+from app.schemas.vehicule import Vehicle as VehicleSchema
+from app.schemas.vehicule import VehicleCreate, VehicleUpdate
 
 router = APIRouter()
 

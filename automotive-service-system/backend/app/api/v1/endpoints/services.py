@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_database_session
-from app.models.servico import Service
-from app.schemas.servico import Service as ServiceSchema
-from app.schemas.servico import ServiceCreate, ServiceUpdate
+from app.models.services import Service
+from app.schemas.service import Service as ServiceSchema
+from app.schemas.service import ServiceCreate, ServiceUpdate
 
 router = APIRouter()
 
