@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_database_session
 from app.models.stock_flow import Supplier
-from app.schemas.stock_flow import StockFlow, stock_flow as stock_flowschema
+
+from app.schemas.stock_flow import StockFlow, stock_flow as StockFlowSchema
 from app.schemas.stock_flow import StockFlowCreate, StockFlowUpdate
 from backend.app.api.routes import supplier
 from backend.app.schemas.supplier import SupplierUpdate
