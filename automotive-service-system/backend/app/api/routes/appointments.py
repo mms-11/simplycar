@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_database_session
-from app.models.appointments import Appointment
+from app.api.services import appointments_service
 from app.schemas.appointment import Appointment as AppointmentSchema
 from app.schemas.appointment import AppointmentCreate, AppointmentUpdate
 
@@ -11,24 +11,17 @@ router = APIRouter()
 
 @router.get("", response_model=list[AppointmentSchema])
 def list_appointments(db: Session = Depends(get_database_session)):
-    return db.query(Appointment).all()
+    return appointments_service.list_appointments(db)
 
 
 @router.post("", response_model=AppointmentSchema, status_code=201)
 def create_appointment(payload: AppointmentCreate, db: Session = Depends(get_database_session)):
-    appointment = Appointment(**payload.model_dump())
-    db.add(appointment)
-    db.commit()
-    db.refresh(appointment)
-    return appointment
+    return appointments_service.create_appointment(db, payload)
 
 
 @router.get("/{appointment_id}", response_model=AppointmentSchema)
 def get_appointment(appointment_id: int, db: Session = Depends(get_database_session)):
-    appointment = db.get(Appointment, appointment_id)
-    if not appointment:
-        raise HTTPException(status_code=404, detail="Appointment not found")
-    return appointment
+    return appointments_service.get_appointment(db, appointment_id)
 
 
 @router.patch("/{appointment_id}", response_model=AppointmentSchema)
@@ -37,15 +30,10 @@ def update_appointment(
     payload: AppointmentUpdate,
     db: Session = Depends(get_database_session),
 ):
-    appointment = db.get(Appointment, appointment_id)
-    if not appointment:
-        raise HTTPException(status_code=404, detail="Appointment not found")
+    return appointments_service.update_appointment(db, appointment_id, payload)
 
-    data = payload.model_dump(exclude_unset=True)
-    for key, value in data.items():
-        setattr(appointment, key, value)
 
-    db.add(appointment)
-    db.commit()
-    db.refresh(appointment)
-    return appointment
+@router.delete("/{appointment_id}", status_code=204)
+def delete_appointment(appointment_id: int, db: Session = Depends(get_database_session)):
+    appointments_service.delete_appointment(db, appointment_id)
+    return None

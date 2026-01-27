@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from . import appointments, customers, services, supplier, vehicles, stock_flow
+from . import appointments, customers, materials, services, stock_flow, supplier, vehicles, workers
 
 router = APIRouter(prefix="/api")
 
@@ -10,3 +10,5 @@ router.include_router(services.router, prefix="/services", tags=["services"])
 router.include_router(appointments.router, prefix="/appointments", tags=["appointments"])
 router.include_router(supplier.router, prefix="/suppliers", tags=["suppliers"])
 router.include_router(stock_flow.router, prefix="/stock-flows", tags=["stock-flows"])
+router.include_router(materials.router, prefix="/materials", tags=["materials"])
+router.include_router(workers.router, prefix="/workers", tags=["workers"])

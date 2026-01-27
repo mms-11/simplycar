@@ -1,21 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.api.dependencies import get_database_session
+from app.api.services._common import apply_partial_update, get_or_404
 from app.models.suppliers import Supplier
-from app.schemas.supplier import Supplier as SupplierSchema
 from app.schemas.supplier import SupplierCreate, SupplierUpdate
 
-router = APIRouter()
 
-
-@router.get("", response_model=list[SupplierSchema])
-def list_suppliers(db: Session = Depends(get_database_session)):
+def list_suppliers(db: Session) -> list[Supplier]:
     return db.query(Supplier).all()
 
 
-@router.post("", response_model=SupplierSchema, status_code=201)
-def create_supplier(payload: SupplierCreate, db: Session = Depends(get_database_session)):
+def create_supplier(db: Session, payload: SupplierCreate) -> Supplier:
     supplier = Supplier(**payload.model_dump())
     db.add(supplier)
     db.commit()
@@ -23,40 +17,20 @@ def create_supplier(payload: SupplierCreate, db: Session = Depends(get_database_
     return supplier
 
 
-@router.get("/{supplier_id}", response_model=SupplierSchema)
-def get_supplier(supplier_id: int, db: Session = Depends(get_database_session)):
-    supplier = db.get(Supplier, supplier_id)
-    if not supplier:
-        raise HTTPException(status_code=404, detail="Supplier not found")
-    return supplier
+def get_supplier(db: Session, supplier_id: int) -> Supplier:
+    return get_or_404(db, Supplier, supplier_id, detail="Supplier not found")
 
 
-@router.patch("/{supplier_id}", response_model=SupplierSchema)
-def update_supplier(
-    supplier_id: int,
-    payload: SupplierUpdate,
-    db: Session = Depends(get_database_session),
-):
-    supplier = db.get(Supplier, supplier_id)
-    if not supplier:
-        raise HTTPException(status_code=404, detail="Supplier not found")
-
-    data = payload.model_dump(exclude_unset=True)
-    for key, value in data.items():
-        setattr(supplier, key, value)
-
+def update_supplier(db: Session, supplier_id: int, payload: SupplierUpdate) -> Supplier:
+    supplier = get_or_404(db, Supplier, supplier_id, detail="Supplier not found")
+    apply_partial_update(supplier, payload.model_dump(exclude_unset=True))
     db.add(supplier)
     db.commit()
     db.refresh(supplier)
     return supplier
 
 
-@router.delete("/{supplier_id}", status_code=204)
-def delete_supplier(supplier_id: int, db: Session = Depends(get_database_session)):
-    supplier = db.get(Supplier, supplier_id)
-    if not supplier:
-        raise HTTPException(status_code=404, detail="Supplier not found")
-
+def delete_supplier(db: Session, supplier_id: int) -> None:
+    supplier = get_or_404(db, Supplier, supplier_id, detail="Supplier not found")
     db.delete(supplier)
     db.commit()
-    return None
