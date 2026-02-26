@@ -1,6 +1,15 @@
 from .appointments import Appointment  # noqa: F401
 from .customers import Customer  # noqa: F401
 from .services import Service  # noqa: F401
+from .appointments import *
+from .customers import *
+from .materials import *
+from .services import *
+from .stock_flow import *
+from .suppliers import *
+from .vehicles import *
+from .workers import *
+from .user import *
 from .vehicles import Vehicle  # noqa: F401
 from .workers import Worker  # noqa: F401
 from .materials import Material, MaterialSupplier, ServiceMaterial  # noqa: F401
