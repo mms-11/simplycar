@@ -7,6 +7,7 @@ class UserType(str, Enum):
     BASIC = "basic"
     ADMIN = "admin"
     COMPANY = "company"
+    WORKER = "worker"
 
 class User(Base):
     __tablename__ = "users"

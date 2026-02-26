@@ -16,6 +16,14 @@ class StockFlowCreate(StockFlowBase):
     pass
 
 
+class StockFlowUpdate(BaseModel):
+    material_id: Optional[int] = None
+    appointment_id: Optional[int] = None
+    flow_type: Optional[Literal["entry", "exit"]] = None
+    quantity: Optional[int] = None
+    origin: Optional[Literal["purchase", "service_use", "adjustment"]] = None
+
+
 class StockFlow(StockFlowBase):
     id: int
     created_at: datetime

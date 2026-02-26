@@ -69,6 +69,22 @@ uvicorn app.main:app --reload
 
 The application will be available at `http://127.0.0.1:8000`.
 
+## Seeding a test database (PostgreSQL)
+
+This repo includes two seed options:
+
+1) Python seed (recommended): runs through the SQLAlchemy models
+
+- Set your connection string (PowerShell example):
+   - `$env:DATABASE_URL = "postgresql+psycopg://USER:PASSWORD@localhost:5432/simplycar_teste"`
+- Run:
+   - `python ./scripts/seed_test_db.py`
+   - `python ./scripts/seed_test_db.py --reset` (drops and recreates all tables; DEV/TEST only)
+
+2) SQL seed (DBeaver): execute the file below in an SQL editor connected to your database
+
+- `scripts/seed_test_db.sql`
+
 ## API Documentation
 
 The automatically generated API documentation can be accessed at:
