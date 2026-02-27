@@ -7,20 +7,19 @@ class WorkerBase(BaseModel):
 	phone: str
 	email: EmailStr
 	service_specialty: Optional[str] = None
-
+	user_id: Optional[int] = None
 
 class WorkerCreate(WorkerBase):
 	pass
-
 
 class WorkerUpdate(BaseModel):
 	name: Optional[str] = None
 	phone: Optional[str] = None
 	email: Optional[EmailStr] = None
 	service_specialty: Optional[str] = None
+	user_id: Optional[int] = None
 
-
-class Worker(WorkerBase):
+class WorkerRead(WorkerBase):
 	id: int
-
-	model_config = ConfigDict(from_attributes=True)
+	class Config:
+		orm_mode = True

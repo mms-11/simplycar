@@ -6,19 +6,18 @@ class SupplierBase(BaseModel):
     name: str
     phone: Optional[str] = None
     email: Optional[EmailStr] = None
-
+    user_id: Optional[int] = None
 
 class SupplierCreate(SupplierBase):
     pass
-
 
 class SupplierUpdate(BaseModel):
     name: Optional[str] = None
     phone: Optional[str] = None
     email: Optional[EmailStr] = None
+    user_id: Optional[int] = None
 
-
-class Supplier(SupplierBase):
+class SupplierRead(SupplierBase):
     id: int
-
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        orm_mode = True
