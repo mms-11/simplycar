@@ -9,5 +9,7 @@ class Customer(Base):
     name = Column(String, index=True)
     phone = Column(String, index=True)
     email = Column(String, unique=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, unique=True)
+    user = relationship("User", back_populates="customer")
 
     appointments = relationship("Appointment", back_populates="customer")

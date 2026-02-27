@@ -9,6 +9,8 @@ class Company(Base):
     name = Column(String, index=True)
     cnpj = Column(String, index=True)
     email = Column(String, unique=True, index=True)
-    type = Column(String, index=True)   
+    type = Column(String, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, unique=True)
+    user = relationship("User", back_populates="company")
 
     

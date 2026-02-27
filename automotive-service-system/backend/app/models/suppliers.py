@@ -13,5 +13,7 @@ class Supplier(Base):
     name = Column(String, nullable=False, index=True)
     phone = Column(String, nullable=True)
     email = Column(String, nullable=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, unique=True)
+    user = relationship("User", back_populates="supplier")
 
     material_suppliers = relationship("MaterialSupplier", back_populates="supplier", cascade="all, delete-orphan")

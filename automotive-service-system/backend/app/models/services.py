@@ -15,3 +15,4 @@ class Service(Base):
     appointments = relationship("Appointment", back_populates="service")
     vehicles = relationship("Vehicle", secondary=vehicle_services, back_populates="services")
     service_materials = relationship("ServiceMaterial", back_populates="service", cascade="all, delete-orphan")
+    payments = relationship("Payment", back_populates="service", cascade="all, delete-orphan")

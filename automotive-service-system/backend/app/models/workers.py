@@ -10,6 +10,8 @@ class Worker(Base):
     phone = Column(String, index=True)
     email = Column(String, unique=True, index=True)
     service_specialty = Column(String, nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, unique=True)
+    user = relationship("User", back_populates="worker")
 
     appointments = relationship(
         "Appointment",
